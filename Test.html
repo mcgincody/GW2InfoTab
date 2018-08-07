@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		
+		TPDeli();	
+	});
+
+	function TPDeli(){
+		document.write("Trading Post Delivery");
+		$.getJSON("https://api.guildwars2.com/v2/commerce/delivery?access_token=E1DF3181-4F80-134B-8458-E8F055E075F6226D7636-9C15-4FCF-8752-380C7BEBE56F",
+		{format: "json"})
+			.done(function(data){
+				console.log(data.coins);
+				document.write("<br />Copper: ");
+				var copper = data.coins % 100;
+				document.write(copper);
+				document.write("<br />Silver: ");
+				var silver = (data.coins % 10000 - copper) / 100;
+				document.write(silver);
+				document.write("<br />Gold: ");
+				var gold = (data.coins - (silver * 100) - copper) / 10000;
+				document.write(gold);
+			});
+	}
+</script>
+</head>	
+</html>
