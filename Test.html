@@ -4,43 +4,58 @@
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
-		var key = "E1DF3181-4F80-134B-8458-E8F055E075F6226D7636-9C15-4FCF-8752-380C7BEBE56F";
+		var key = "?access_token=E1DF3181-4F80-134B-8458-E8F055E075F6226D7636-9C15-4FCF-8752-380C7BEBE56F";
 		TPDeli(key);
 		charPull(key);
+		money(key);
 	});
 
 	function TPDeli(key){
-		$.getJSON(("https://api.guildwars2.com/v2/commerce/delivery?access_token="+key),
+		$.getJSON(("https://api.guildwars2.com/v2/commerce/delivery"+key),
 		{format: "json"})
 			.done(function(data){
-				document.write("<br />Trading Post Delivery");
+				document.write("<br /><b>Trading Post Delivery</b>");
 				console.log(data.coins);
-				document.write("<br />Copper: ");
 				var copper = data.coins % 100;
-				document.write(copper);
-				document.write("<br />Silver: ");
 				var silver = (data.coins % 10000 - copper) / 100;
-				document.write(silver);
-				document.write("<br />Gold: ");
 				var gold = (data.coins - (silver * 100) - copper) / 10000;
-				document.write(gold);
+				document.write("<br />Gold: " + gold);
+				document.write(" Silver: " + silver);
+				document.write(" Copper: " + copper);
 				document.write("<br />");
 			});
 	}
 
 	function charPull(key){
-		$.getJSON(("https://api.guildwars2.com/v2/characters?access_token="+key),
+		$.getJSON(("https://api.guildwars2.com/v2/characters"+key),
 		{format: "json"})
-			.done(function(data){
-				document.write("<br />Character List");
-				$.each(data, function(i, item){
-					document.write("<br />" + item);	
+			.done(function(accountData){
+				document.write("<br /><b>Character List</b>");
+				$.each(accountData, function(i, item){
+					$.getJSON(("https://api.guildwars2.com/v2/characters/"+item+key),
+					{format: "json"})
+					.done(function(data){
+						document.write("<b><i>"+data.name + "</b> Class: " + data.profession + " Level: "+ data.level + "</i><br />");	
+					});
 				});
 				document.write("<br />");
 			});
-		
+	}
 
-
+	function money(key){
+		$.getJSON(("https://api.guildwars2.com/v2/account/wallet" + key), 
+		{format: "json"})
+			.done(function(keyData){
+				document.write("<br /><b>Wallet:</b>");
+				$.each(keyData, function(i, item){
+					$.getJSON(("https://api.guildwars2.com/v2/currencies/"+item.id),
+					{format: "json"})
+						.done(function(coinData){
+							console.log(coinData.name);
+							document.write("<br /><i>" + coinData.name + "</i>: " + item.value);
+						});
+				});
+			});
 	}
 </script>
 </head>	
